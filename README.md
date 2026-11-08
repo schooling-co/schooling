@@ -12,9 +12,3 @@ Home Screen icons (har ek alag app banega):
   Super admin   : https://schooling-co.github.io/Schooling/super/
   Teacher       : https://schooling-co.github.io/Schooling/teacher/
   Students      : https://schooling-co.github.io/Schooling/parent/   (folder ka naam parent hi rahe, taake purane link na tootein)
-
-Pehle se install kiye hue icons delete karke dobara "Add to Home Screen" karein.
-
-GitHub Pages: repository > Settings > Pages > Deploy from a branch > main / (root) > Save.
-Login page par "Activation Code": school admin ka pehla code 1140 (login ke baad naya code set karna parta hai).
-Data har device ke browser mein save hota hai. Backup: Settings > Download backup.
