@@ -1,7 +1,7 @@
 // Schooling offline service worker.
 // Opens instantly from the saved copy, then checks the network in the background (stale-while-revalidate).
 // When a newer version is found, the open page is told so it can show an "Update" button.
-const V="schooling-v7";const EXT="schooling-ext";
+const V="schooling-v8";const EXT="schooling-ext";
 const SHELL=["./index.html","./icon-192.png","./icon-512.png","./apple-touch-icon.png"];
 self.addEventListener("install",e=>{
   const FB=["app","auth","firestore"].map(n=>"https://www.gstatic.com/firebasejs/10.12.2/firebase-"+n+"-compat.js");
