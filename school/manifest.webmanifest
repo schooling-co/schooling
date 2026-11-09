@@ -9,8 +9,8 @@
   "standalone",
   "minimal-ui"
  ],
- "background_color": "#0f0e24",
- "theme_color": "#6d5efc",
+ "background_color": "#24190e",
+ "theme_color": "#fcae5e",
  "orientation": "any",
  "categories": [
   "education"
