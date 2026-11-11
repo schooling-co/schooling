@@ -16,5 +16,5 @@ Home Screen icons (har ek alag app banega):
 Pehle se install kiye hue icons delete karke dobara "Add to Home Screen" karein.
 
 GitHub Pages: repository > Settings > Pages > Deploy from a branch > main / (root) > Save.
-Login page par "Activation Code": school admin ka pehla code 1140 (login ke baad naya code set karna parta hai).
+Login page par "Activation Code": school admin ka code Super Admin deta hai (har school ka alag, "School Admin code" card mein nazar aata hai).
 Data har device ke browser mein save hota hai. Backup: Settings > Download backup.
