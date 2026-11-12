@@ -8,10 +8,10 @@ GitHub Pages par ye structure hona chahiye (repo ke root mein):
   super/    (index.html + manifest.webmanifest)
 
 Home Screen icons (har ek alag app banega):
-  School        : https://schooling-co.github.io/Schooling/
-  Super admin   : https://schooling-co.github.io/Schooling/super/
-  Teacher       : https://schooling-co.github.io/Schooling/teacher/
-  Students      : https://schooling-co.github.io/Schooling/parent/   (folder ka naam parent hi rahe, taake purane link na tootein)
+  School        : https://schooling-d2k7.vercel.app/
+  Super admin   : https://schooling-d2k7.vercel.app/super/
+  Teacher       : https://schooling-d2k7.vercel.app/teacher/
+  Students      : https://schooling-d2k7.vercel.app/parent/   (folder ka naam parent hi rahe, taake purane link na tootein)
 
 Pehle se install kiye hue icons delete karke dobara "Add to Home Screen" karein.
 
