@@ -520,10 +520,10 @@ async function onUser(u){if(u&&u.isAnonymous)return;fbU=u;if(isOwner()){if(!wind
    fast=true;hideGate();me={role:"t",admin:true};link("a");cls=1;tab="hm";away=false;render();cstat(" Loading latest data...")}
  }catch(e){fast=false}}
  await licLoad(u);
- try{const rr=await rsP;if(rr.e)throw rr.e;const r=rr.r;if(r){cloud=JSON.parse(r.str);lastCloud=r.str;lastN=r.n;curRev=r.rev}else{curRev=0;lastCloud="";lastN=0}}catch(e){if(e&&e.fatal){gate(e.message);return}net=false}
+ try{const rr=await rsP;if(rr.e)throw rr.e;const r=rr.r;if(r){cloud=JSON.parse(r.str);lastCloud=r.str;lastN=r.n;curRev=r.rev}else{curRev=0;lastCloud="";lastN=0}}catch(e){if(e&&e.fatal){gate(e.message);return}net=false;window.__rdErr=e}
  if(net){try{localStorage.setItem("cb_last",String(Date.now()))}catch(e){}}else{const lo=+(lsGet("cb_last")||0);if(lo&&Date.now()-lo>72*3600e3){gate("No internet for 3 days. Turn on the internet and log in again.");return}}
  let loc=null,real=prev===id;if(fast){loc={S,PH,u:fastU};real=true}else if(prev===id)loc={S,PH,u:S.__u||0};else{try{if(prev){localStorage.setItem("cb2@"+prev,cpl())}const r=lsGet("cb2@"+id);if(r){loc=JSON.parse(r);real=true}else if(!lsGet("cbhad"))loc={S,PH,u:S.__u||1}}catch(e){}}
- if(!net&&!real){gate("Could not load the school data from the server. Check the internet and log in again.");return}
+ if(!net&&!real){gate("Could not load the school data from the server. Check the internet and log in again."+(window.__rdErr?" Reason: "+String(window.__rdErr.code||window.__rdErr.message||window.__rdErr).slice(0,140)+(/permission/i.test(String(window.__rdErr.code||window.__rdErr.message))?" (the school licence may be expired, or the Firestore rules do not allow this account)":""):""));return}
  if(fast){if(cloud&&cloud.S&&(cloud.u||0)>fastU){if(chg===chg0){S=norm(cloud.S);PH=cloud.PH||{}}else{const b=JSON.parse(fastBase);S=norm(m3(b.S||{},S,cloud.S));PH=m3(b.PH||{},PH,cloud.PH||{});S.__u=Math.max(S.__u||0,cloud.S.__u||0,Date.now());dirty=true;fixMerged()}adopted=true}else if(net)dirty=true}
  else if(cloud&&(!loc||(cloud.u||0)>(loc.u||0))){S=norm(cloud.S);PH=cloud.PH||{}}else if(loc){S=norm(loc.S);PH=loc.PH||{};if(net)dirty=true}else{freshS();dirty=true}
  try{localStorage.setItem("cbuid",id);localStorage.setItem("cbhad","1")}catch(e){}saveLocal();if(!licOK()){paywall();cstat("A plan is required");return}hideGate();if(isOwner()){setSup(true);me={role:"t",admin:true,sup:true};cls=1;tab="sa";render();cstat(" Super admin: "+acctShow(u.email))}else{if(fast){if(adopted)remoteApplied("Latest school data loaded")}else{if(PG==="school"){me={role:"t",admin:true};link("a");cls=1;tab="hm";away=false}else me=null;render()}cstat(net?" Account: "+acctShow(u.email):" Offline: work is saved locally")}if(net&&!isOwner())watchCloud(id);if(net&&dirty){lastCloud=lastCloud;push()}if(window.pubSoon)pubSoon();if(window.pullReq)setTimeout(pullReq,3000);if(window.pullWrites)setTimeout(window.pullWrites,4000)}
@@ -6133,6 +6133,29 @@ window.admMake=function(id,w){var s=(S.students||[]).find(function(x){return x.i
  admOpen(id,w)};
 var a0=window.addStudent;if(typeof a0!=="function")return;
 window.addStudent=function(){var n0=(S.students||[]).length;var r=a0.apply(this,arguments);try{if((S.students||[]).length>n0){var s=S.students[S.students.length-1];setTimeout(function(){admPrompt(s)},250)}}catch(e){}return r};
+})();
+</script>
+<script id="authwd">
+/* If "Signing in..." lasts more than 12 s, show the real reason instead of waiting forever */
+(function(){
+var g=window.gAuth;if(typeof g!=="function")return;
+window.gAuth=function(){
+ var r=g.apply(this,arguments),t=setTimeout(async function(){
+  var m=document.getElementById("gm");if(!m||m.textContent.indexOf("Signing in")<0)return;
+  var why="";
+  try{var k=(typeof fbCfg==="function"&&fbCfg()||{}).apiKey;
+   var c=new AbortController(),to=setTimeout(function(){c.abort()},8000);
+   var x=await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="+encodeURIComponent(k),{method:"POST",headers:{"Content-Type":"application/json"},body:"{}",signal:c.signal});clearTimeout(to);
+   var j={};try{j=await x.json()}catch(e){}
+   var mm=(j.error&&j.error.message)||"";
+   if(x.status===403||/REFERRER|BLOCKED|API_KEY/i.test(mm))why="Blocked: this web address is not allowed for the Firebase API key ("+(mm||x.status)+"). Add this site in Google Cloud > Credentials > Browser key.";
+   else if(/INVALID_API_KEY|API key not valid/i.test(mm))why="The Firebase API key is not valid.";
+   else why="Google is reachable ("+(mm||x.status)+"), but sign-in is slow or stuck. Close the app, open it again and retry.";
+  }catch(e){why="Cannot reach Google sign-in servers. Check the internet, or this network/browser is blocking it ("+(e&&e.name||"error")+")."}
+  m.textContent=why;try{g.b=0;window.gAuth.b=0}catch(e){}
+ },12000);
+ Promise.resolve(r).then(function(){clearTimeout(t)},function(){clearTimeout(t)});
+ return r};
 })();
 </script>
 <script id="pdfdl">
