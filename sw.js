@@ -1,7 +1,7 @@
 // Schooling offline service worker.
 // Opens instantly from the saved copy, then checks the network in the background (stale-while-revalidate).
 // When a newer version is found, the open page is told so it can show an "Update" button.
-const V="schooling-v9";const EXT="schooling-ext";
+const V="schooling-v11";const EXT="schooling-ext";
 const SHELL=["./index.html","./icon-192.png","./icon-512.png","./apple-touch-icon.png"];
 self.addEventListener("install",e=>{
   const FB=["app","auth","firestore"].map(n=>"https://www.gstatic.com/firebasejs/10.12.2/firebase-"+n+"-compat.js");
@@ -16,6 +16,8 @@ const MK=new Request(self.location.origin+"/__upd");
 function notify(){self.clients.matchAll({type:"window"}).then(cs=>cs.forEach(c=>c.postMessage({t:"upd"})))}
 self.addEventListener("fetch",e=>{
   const u=new URL(e.request.url);
+  if(e.request.method==="GET"&&u.hostname==="cdnjs.cloudflare.com"&&/\/(html2canvas|jspdf)\//.test(u.pathname)){ // PDF libraries: keep after first use
+    e.respondWith(caches.open(EXT).then(async c=>{const h=await c.match(e.request);if(h)return h;const r=await fetch(e.request);if(r&&(r.ok||r.type==="opaque"))c.put(e.request,r.clone()).catch(()=>{});return r}));return}
   if(e.request.method==="GET"&&u.hostname==="www.gstatic.com"&&u.pathname.indexOf("/firebasejs/")===0){ // Firebase files never change for a given version: keep them on the phone
     e.respondWith(caches.open(EXT).then(async c=>{const h=await c.match(e.request);if(h)return h;const r=await fetch(e.request);if(r&&(r.ok||r.type==="opaque"))c.put(e.request,r.clone()).catch(()=>{});return r}));return}
   if(e.request.method==="GET"&&u.hostname==="www.gstatic.com"&&u.pathname.indexOf("/firebasejs/")===0){ // versioned Firebase files never change: serve from the saved copy
@@ -37,7 +39,7 @@ self.addEventListener("fetch",e=>{
       }
       return r;
     }).catch(()=>null);
-    if(hit){e.waitUntil(net);return hit}
+    if(hit){e.waitUntil(net);if(e.request.mode==="navigate"){const w=await Promise.race([net,new Promise(res=>setTimeout(()=>res(null),1500))]);if(w&&w.ok&&!w.redirected){await c.delete(MK);return w}}return hit}
     const r=await net;
     if(r)return r;
     return (await c.match(new Request(new URL("./index.html",e.request.url).href)))||(await c.match(new Request(new URL("./index.html",self.location.href).href)))||Response.error();
