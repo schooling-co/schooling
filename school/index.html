@@ -2466,6 +2466,21 @@ function bkAgo(){let t=0;try{t=+localStorage.getItem(BK_KEY)||0}catch(e){}return
   if(!warned&&me&&me.admin&&!me.sup){warned=true;const t=bkAgo();if(!t||Date.now()-t>7*864e5)setTimeout(()=>window.bkNote&&bkNote("No backup for 7 days. Go to Settings > Download backup."),800)}
   return o};
 })();
+/* auto backup before the licence ends: from 2 days before the end date, one backup file per day (phone and PC) */
+(function(){
+const AK="autobk_ts",IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function endAt(){try{const u=+(lic&&lic.until)||0,t=+(lic&&lic._tr)||0;return u>Date.now()?u:(t>Date.now()?t:0)}catch(e){return 0}}
+function lastAuto(){try{return+localStorage.getItem(AK)||0}catch(e){return 0}}
+function banner(txt){let b=document.getElementById("autobkb");if(!b){b=document.createElement("div");b.id="autobkb";b.style.cssText="position:fixed;left:12px;right:12px;bottom:14px;z-index:99999;background:#111827;color:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:600 14px/1.4 system-ui,sans-serif;display:flex;gap:10px;align-items:center;flex-wrap:wrap";document.body.appendChild(b)}
+ b.innerHTML="";const t=document.createElement("span");t.style.flex="1 1 180px";t.textContent=txt;const y=document.createElement("button");y.textContent="Save backup now";y.style.cssText="border:0;border-radius:999px;padding:10px 16px;background:#22c55e;color:#fff;font-weight:700";y.onclick=function(){try{window.doBackup();localStorage.setItem(AK,String(Date.now()))}catch(e){}b.remove()};const x=document.createElement("button");x.textContent="Later";x.style.cssText="border:0;border-radius:999px;padding:10px 14px;background:#374151;color:#fff";x.onclick=function(){b.remove()};b.append(t,y,x)}
+function check(){try{if(!me||!me.admin||me.sup||typeof window.doBackup!=="function")return;const e=endAt();if(!e)return;const days=Math.ceil((e-Date.now())/864e5);if(days>2)return;
+ if(Date.now()-lastAuto()<20*36e5)return;
+ const msg="Your licence ends "+(days<=0?"today":"in "+days+" day"+(days>1?"s":""))+". Save a backup of all school data now.";
+ if(IOS){banner(msg);return}
+ window.doBackup();localStorage.setItem(AK,String(Date.now()));try{window.bkNote&&bkNote("Automatic backup saved. "+msg)}catch(x){}
+}catch(x){}}
+setTimeout(check,4000);setInterval(check,6e5);
+})();
 })();
 
 /* ---- login codes: every teacher, student and parent has one code; admin and super admin can type or generate it ---- */
